@@ -1,0 +1,12 @@
+# This file is where you define your pipelines. You can define multiple.
+# For more information on multiple pipelines, see the documentation:
+#   https://www.elastic.co/guide/en/logstash/current/multiple-pipelines.html
+
+- pipeline.id: main
+  path.config: "/etc/logstash/conf.d/*.conf"
+
+- pipeline.id: zabbix
+  path.config: "/etc/logstash/conf.d/zabbix/*.conf"
+
+- pipeline.id: esxi
+  path.config: "/etc/logstash/conf.d/esxi/*.conf"

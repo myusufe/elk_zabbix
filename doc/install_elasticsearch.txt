@@ -1,0 +1,88 @@
+
+#Install Java 
+
+yum -y install java-1.8.0-openjdk
+yum -y install java-1.8.0-openjdk-devel
+yum -y install java-1.8.0-openjdk-headless
+
+#Import the ELasticserch PGP key
+
+rpm --import https://artifacts.elastic.co/GPG-KEY-elasticsearch
+
+#Installing repo
+
+[elasticsearch]
+name=Elasticsearch repository for 7.x packages
+baseurl=https://artifacts.elastic.co/packages/7.x/yum
+gpgcheck=1
+gpgkey=https://artifacts.elastic.co/GPG-KEY-elasticsearch
+enabled=0
+autorefresh=1
+type=rpm-md
+
+#Install elasticsearch repo
+
+yum install elasticsearch
+
+# Run elasticsearch
+
+sudo /bin/systemctl daemon-reload
+sudo /bin/systemctl enable elasticsearch.service
+
+Elasticsearch can be started and stopped as follows:
+
+sudo systemctl start elasticsearch.service
+sudo systemctl stop elasticsearch.service
+
+
+# Install Logstash
+
+yum -y install logstash
+
+# Edit pipelines file, and add as below,
+
+vi /etc/logstash/pipelines.yml
+
+
+- pipeline.id: logstash
+  path.config: "/etc/logstash/conf.d/logstash/*.conf"
+
+- pipeline.id: kibana
+  path.config: "/etc/logstash/conf.d/kibana/*.conf"
+
+- pipeline.id: elasticsearch
+  path.config: "/etc/logstash/conf.d/elasticsearch/*.conf"
+
+- pipeline.id: zabbix
+  path.config: "/etc/logstash/conf.d/zabbix/*.conf"
+
+
+# Create logstash config file
+
+exmple: /etc/logstash/conf.d/zabbix/zabbix.conf
+
+# cat /etc/logstash/conf.d/zabbix/zabbix.conf 
+input {
+  syslog {
+    port => 5511
+  }
+}
+
+output {
+  stdout {
+    codec => rubydebug 
+  }
+  elasticsearch {
+    hosts => ["http://elasticsearch01.akaicloud.com:9200", "http://elasticsearch02.akaicloud.com:9200", "http://elasticsearch03.akaicloud.com:9200"]
+    index => "zabbix"
+  } 
+}
+
+# Install Kibana
+
+yum -y install kibana
+
+
+
+
+

@@ -1,0 +1,104 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<zabbix_export>
+    <version>4.4</version>
+    <date>2020-05-20T07:57:59Z</date>
+    <groups>
+        <group>
+            <name>Templates/Applications</name>
+        </group>
+    </groups>
+    <templates>
+        <template>
+            <template>Template App Kibana</template>
+            <name>Template App Kibana</name>
+            <groups>
+                <group>
+                    <name>Templates/Applications</name>
+                </group>
+            </groups>
+            <applications>
+                <application>
+                    <name>kibana monitoring</name>
+                </application>
+                <application>
+                    <name>Web monitoring</name>
+                </application>
+            </applications>
+            <items>
+                <item>
+                    <name>Kibana 5601 port monitoring</name>
+                    <type>SIMPLE</type>
+                    <key>net.tcp.service[http,192.168.128.91,5601]</key>
+                    <history>30d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>kibana monitoring</name>
+                        </application>
+                    </applications>
+                    <triggers>
+                        <trigger>
+                            <expression>{last()}=0</expression>
+                            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+                            <recovery_expression>{last()}=1</recovery_expression>
+                            <name>{HOST.NAME} Kibana 5601 port is down</name>
+                            <priority>HIGH</priority>
+                        </trigger>
+                    </triggers>
+                </item>
+            </items>
+            <httptests>
+                <httptest>
+                    <name>Kibana URL monitoring</name>
+                    <application>
+                        <name>Web monitoring</name>
+                    </application>
+                    <agent>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:33.0) Gecko/20100101 Firefox/33.0</agent>
+                    <steps>
+                        <step>
+                            <name>Kibana URL monitoring</name>
+                            <url>http://192.168.128.91:5601/app/kibana</url>
+                            <follow_redirects>NO</follow_redirects>
+                            <status_codes>200</status_codes>
+                        </step>
+                    </steps>
+                </httptest>
+            </httptests>
+        </template>
+    </templates>
+    <triggers>
+        <trigger>
+            <expression>{Template App Kibana:web.test.fail[Kibana URL monitoring].last()}&lt;&gt;0</expression>
+            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+            <recovery_expression>{Template App Kibana:web.test.fail[Kibana URL monitoring].last()}=0</recovery_expression>
+            <name>{HOST.NAME} Kibana URL is down</name>
+            <priority>HIGH</priority>
+            <dependencies>
+                <dependency>
+                    <name>{HOST.NAME} Kibana 5601 port is down</name>
+                    <expression>{Template App Kibana:net.tcp.service[http,192.168.128.91,5601].last()}=0</expression>
+                    <recovery_expression>{Template App Kibana:net.tcp.service[http,192.168.128.91,5601].last()}=1</recovery_expression>
+                </dependency>
+            </dependencies>
+        </trigger>
+        <trigger>
+            <expression>{Template App Kibana:web.test.rspcode[Kibana URL monitoring,Kibana URL monitoring].last()}&lt;&gt;200</expression>
+            <recovery_mode>RECOVERY_EXPRESSION</recovery_mode>
+            <recovery_expression>{Template App Kibana:web.test.rspcode[Kibana URL monitoring,Kibana URL monitoring].last()}=200</recovery_expression>
+            <name>{HOST.NAME} Kibana URL is something wrong - HTTP State is not 200</name>
+            <priority>HIGH</priority>
+            <dependencies>
+                <dependency>
+                    <name>{HOST.NAME} Kibana 5601 port is down</name>
+                    <expression>{Template App Kibana:net.tcp.service[http,192.168.128.91,5601].last()}=0</expression>
+                    <recovery_expression>{Template App Kibana:net.tcp.service[http,192.168.128.91,5601].last()}=1</recovery_expression>
+                </dependency>
+                <dependency>
+                    <name>{HOST.NAME} Kibana URL is down</name>
+                    <expression>{Template App Kibana:web.test.fail[Kibana URL monitoring].last()}&lt;&gt;0</expression>
+                    <recovery_expression>{Template App Kibana:web.test.fail[Kibana URL monitoring].last()}=0</recovery_expression>
+                </dependency>
+            </dependencies>
+        </trigger>
+    </triggers>
+</zabbix_export>
