@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <zabbix_export>
     <version>5.0</version>
-    <date>2020-05-28T08:14:51Z</date>
+    <date>2020-05-28T19:34:57Z</date>
     <groups>
         <group>
             <name>Templates/Applications</name>
@@ -17,6 +17,12 @@
                 </group>
             </groups>
             <applications>
+                <application>
+                    <name>Elasticsearch TCP Port monitoring</name>
+                </application>
+                <application>
+                    <name>Elasticsearch Web Scenario monitoring</name>
+                </application>
                 <application>
                     <name>elasticsearch_cluster_stats</name>
                 </application>
@@ -680,6 +686,18 @@
                     <master_item>
                         <key>elasticsearch_cluster.nodes.stats</key>
                     </master_item>
+                </item>
+                <item>
+                    <name>ES {#ES.NODE} : Elasticsearch TCP connection</name>
+                    <type>SIMPLE</type>
+                    <key>net.tcp.service[http,{#ES.NODE},9600]</key>
+                    <history>30d</history>
+                    <trends>90d</trends>
+                    <applications>
+                        <application>
+                            <name>Elasticsearch TCP Port monitoring</name>
+                        </application>
+                    </applications>
                 </item>
             </items>
             <discovery_rules>
@@ -3437,6 +3455,20 @@
                             </master_item>
                         </item_prototype>
                     </item_prototypes>
+                    <graph_prototypes>
+                        <graph_prototype>
+                            <name>ES {#ES.NODE} : Indices Query Cache Memory Size</name>
+                            <graph_items>
+                                <graph_item>
+                                    <color>1A7C11</color>
+                                    <item>
+                                        <host>Template App Elasticsearch</host>
+                                        <key>elasticsearch_cluster.nodes.indices.query_cache.memory_size_in_bytes[{#ES.NODE}]</key>
+                                    </item>
+                                </graph_item>
+                            </graph_items>
+                        </graph_prototype>
+                    </graph_prototypes>
                     <timeout>15s</timeout>
                     <url>{$URL}/_nodes/_all/nodes</url>
                     <lld_macro_paths>
@@ -3457,6 +3489,23 @@
                     </preprocessing>
                 </discovery_rule>
             </discovery_rules>
+            <httptests>
+                <httptest>
+                    <name>ES {#ES.NODE} : Elasticsearch Web Response</name>
+                    <application>
+                        <name>Elasticsearch Web Scenario monitoring</name>
+                    </application>
+                    <agent>Mozilla/5.0 (X11; Ubuntu; Linux x86_64; rv:73.0) Gecko/20100101 Firefox/73.0</agent>
+                    <steps>
+                        <step>
+                            <name>ES {#ES.NODE} : Elasticsearch Web connection</name>
+                            <url>{$URL}</url>
+                            <follow_redirects>NO</follow_redirects>
+                            <status_codes>200</status_codes>
+                        </step>
+                    </steps>
+                </httptest>
+            </httptests>
         </template>
     </templates>
 </zabbix_export>
