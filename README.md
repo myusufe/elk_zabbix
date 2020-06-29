@@ -3,7 +3,7 @@
 ## Udemy online course
 This github is for udemy practice on \
 "Monitoring Elasticsearch Logstash Kibana Using Zabbix"\
-https://www.udemy.com/course/become-expert-on-grafana-dashboard
+https://www.udemy.com/course/monitoring-elasticsearch-logstash-kibana-using-zabbix/?referralCode=35711A7EAB51267B1275
 
 In this course we will use this applications,
 - Zabbix 4.4
